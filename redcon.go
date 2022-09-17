@@ -517,6 +517,10 @@ func (c *conn) Detach() DetachedConn {
 	return &detachedConn{conn: c, cmds: cmds}
 }
 
+func (c *conn) Attach() {
+	c.detached = false
+}
+
 type detachedConn struct {
 	*conn
 	cmds []Command
@@ -602,9 +606,9 @@ func (w *Writer) WriteNull() {
 // sub-responses to the client to complete the response.
 // For example to write two strings:
 //
-//   c.WriteArray(2)
-//   c.WriteBulkString("item 1")
-//   c.WriteBulkString("item 2")
+//	c.WriteArray(2)
+//	c.WriteBulkString("item 1")
+//	c.WriteBulkString("item 2")
 func (w *Writer) WriteArray(count int) {
 	if w.err != nil {
 		return
@@ -709,17 +713,18 @@ func (w *Writer) WriteRaw(data []byte) {
 }
 
 // WriteAny writes any type to client.
-//   nil             -> null
-//   error           -> error (adds "ERR " when first word is not uppercase)
-//   string          -> bulk-string
-//   numbers         -> bulk-string
-//   []byte          -> bulk-string
-//   bool            -> bulk-string ("0" or "1")
-//   slice           -> array
-//   map             -> array with key/value pairs
-//   SimpleString    -> string
-//   SimpleInt       -> integer
-//   everything-else -> bulk-string representation using fmt.Sprint()
+//
+//	nil             -> null
+//	error           -> error (adds "ERR " when first word is not uppercase)
+//	string          -> bulk-string
+//	numbers         -> bulk-string
+//	[]byte          -> bulk-string
+//	bool            -> bulk-string ("0" or "1")
+//	slice           -> array
+//	map             -> array with key/value pairs
+//	SimpleString    -> string
+//	SimpleInt       -> integer
+//	everything-else -> bulk-string representation using fmt.Sprint()
 func (w *Writer) WriteAny(v interface{}) {
 	if w.err != nil {
 		return
