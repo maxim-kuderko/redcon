@@ -105,6 +105,7 @@ type Conn interface {
 	//       }
 	//   }()
 	Detach() DetachedConn
+	Attach()
 	// ReadPipeline returns all commands in current pipeline, if any
 	// The commands are removed from the pipeline.
 	ReadPipeline() []Command
